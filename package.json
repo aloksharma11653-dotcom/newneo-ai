@@ -1,0 +1,8 @@
+{
+  "name": "neonew-ai",
+  "version": "1.0.0",
+  "description": "NeoNew AI Chat App",
+  "engines": {
+    "node": "18.x"
+  }
+}

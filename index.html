@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeoNew AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #00e5ff;
+    --accent2: #a259ff;
+    --gold: #ffd700;
+    --danger: #ff4d6d;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --ai-bubble: #0d1f2d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Rajdhani', 'Noto Sans Devanagari', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; top: -200px; left: 50%;
+    transform: translateX(-50%); width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .app {
+    width: 100%; max-width: 480px; min-height: 100vh;
+    display: flex; flex-direction: column; position: relative; z-index: 1;
+  }
+  .header {
+    padding: 18px 20px 14px; display: flex; align-items: center;
+    justify-content: space-between; border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px;
+    box-shadow: 0 0 16px rgba(0,229,255,0.3);
+  }
+  .logo-text {
+    font-size: 22px; font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  .logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: -2px; }
+  .status-bar {
+    display: flex; gap: 8px; padding: 10px 16px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    align-items: center; flex-wrap: wrap;
+  }
+  .points-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 13px; font-weight: 600;
+  }
+  .points-chip .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 6px var(--accent);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .premium-badge {
+    display: flex; align-items: center; gap: 5px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 12px; font-weight: 700; color: #000; letter-spacing: 0.5px;
+  }
+  .upgrade-btn {
+    margin-left: auto;
+    background: linear-gradient(135deg, var(--accent2), #7b2fff);
+    border: none; border-radius: 20px; padding: 5px 14px;
+    font-size: 12px; font-weight: 700; color: #fff; cursor: pointer;
+    font-family: inherit; transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .upgrade-btn:hover { transform: scale(1.05); box-shadow: 0 0 12px rgba(162,89,255,0.4); }
+  .chat-area {
+    flex: 1; overflow-y: auto; padding: 20px 16px;
+    display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
+  }
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .welcome { text-align: center; padding: 40px 20px; animation: fadeUp 0.6s ease; }
+  .welcome-icon { font-size: 56px; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(0,229,255,0.4)); }
+  .welcome h2 {
+    font-size: 26px; font-weight: 700; margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .welcome p { color: var(--muted); font-size: 14px; line-height: 1.6; font-family: 'Noto Sans Devanagari', sans-serif; }
+  .suggestion-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
+  .chip {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 7px 14px; font-size: 12px;
+    color: var(--text); cursor: pointer; transition: all 0.2s;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); }
+  .msg { display: flex; flex-direction: column; gap: 4px; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .msg.user { align-items: flex-end; }
+  .msg.ai { align-items: flex-start; }
+  .bubble {
+    max-width: 82%; padding: 11px 15px; border-radius: 16px;
+    font-size: 14px; line-height: 1.6;
+    font-family: 'Noto Sans Devanagari', 'Rajdhani', sans-serif;
+  }
+  .msg.user .bubble {
+    background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(162,89,255,0.15));
+    border: 1px solid rgba(0,229,255,0.25); border-bottom-right-radius: 4px;
+  }
+  .msg.ai .bubble { background: var(--ai-bubble); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .ai-label { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 2px; }
+  .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 12px 16px; background: var(--ai-bubble); border: 1px solid var(--border); border-radius: 16px; border-bottom-left-radius: 4px; width: fit-content; }
+  .typing-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: typingBounce 1.2s infinite; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  .input-area {
+    padding: 12px 14px; background: rgba(10,10,15,0.97);
+    backdrop-filter: blur(12px); border-top: 1px solid var(--border);
+    position: sticky; bottom: 0;
+  }
+  .input-row { display: flex; gap: 10px; align-items: flex-end; }
+  .msg-input {
+    flex: 1; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px 16px; color: var(--text);
+    font-size: 14px; font-family: 'Noto Sans Devanagari', 'Rajdhani', sans-serif;
+    resize: none; outline: none; max-height: 120px; line-height: 1.5; transition: border-color 0.2s;
+  }
+  .msg-input:focus { border-color: var(--accent); }
+  .msg-input::placeholder { color: var(--muted); }
+  .send-btn {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; transition: all 0.2s; flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(0,229,255,0.25);
+  }
+  .send-btn:hover { transform: scale(1.08); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 200;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 28px 24px;
+    max-width: 360px; width: 100%; text-align: center;
+    animation: fadeUp 0.3s ease; position: relative;
+  }
+  .modal h3 {
+    font-size: 22px; font-weight: 700; margin-bottom: 6px;
+    background: linear-gradient(90deg, var(--gold), #ff8c00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .modal p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; font-family: 'Noto Sans Devanagari', sans-serif; }
+  .plan-box { background: var(--surface); border: 1px solid var(--gold); border-radius: 14px; padding: 16px; margin-bottom: 20px; }
+  .plan-price { font-size: 36px; font-weight: 700; color: var(--gold); }
+  .plan-price span { font-size: 16px; color: var(--muted); }
+  .plan-features { list-style: none; margin-top: 10px; text-align: left; }
+  .plan-features li { font-size: 13px; padding: 4px 0; color: var(--text); display: flex; align-items: center; gap: 8px; font-family: 'Noto Sans Devanagari', sans-serif; }
+  .plan-features li::before { content: '✓'; color: var(--accent); font-weight: 700; }
+  .pay-btn {
+    width: 100%; background: linear-gradient(135deg, var(--gold), #ff8c00);
+    color: #000; border: none; border-radius: 12px; padding: 14px;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .pay-btn:hover { transform: scale(1.02); }
+  .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🧠</div>
+      <div>
+        <div class="logo-text">NeoNew</div>
+        <div class="logo-sub">AI ASSISTANT</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="points-chip" id="pointsChip">
+      <span class="dot"></span>
+      <span id="pointsDisplay">Points: 140</span>
+    </div>
+    <div id="premiumBadge" class="premium-badge" style="display:none">⭐ PREMIUM</div>
+    <button class="upgrade-btn" id="upgradeBtn" onclick="showModal()">⚡ Upgrade</button>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="welcome" id="welcomeScreen">
+      <div class="welcome-icon">🤖</div>
+      <h2>NeoNew AI</h2>
+      <p>Namaste! Main aapka smart AI assistant hoon.<br>Kuch bhi poocho — Hindi ya English mein!</p>
+      <div class="suggestion-chips">
+        <div class="chip" onclick="sendChip('IPL 2025 ke baare mein batao')">🏏 IPL 2025</div>
+        <div class="chip" onclick="sendChip('AI kya hota hai samjhao')">🤖 AI kya hai?</div>
+        <div class="chip" onclick="sendChip('Paise kaise bachayein tips do')">💰 Paise bachao</div>
+        <div class="chip" onclick="sendChip('Mujhe ek joke sunao')">😂 Joke sunao</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea class="msg-input" id="msgInput" placeholder="Kuch bhi poocho..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="hideModal()">✕</button>
+    <div style="font-size:40px;margin-bottom:10px">⭐</div>
+    <h3>NeoNew Premium</h3>
+    <p>Free points khatam hone ke baad bhi<br>unlimited chat karo!</p>
+    <div class="plan-box">
+      <div class="plan-price">₹99 <span>/ month</span></div>
+      <ul class="plan-features">
+        <li>Unlimited messages ♾️</li>
+        <li>Faster responses ⚡</li>
+        <li>Smart AI answers 🧠</li>
+        <li>No ads, no limits 🚫</li>
+      </ul>
+    </div>
+    <button class="pay-btn" onclick="payNow()">💳 UPI se Pay Karo — ₹99</button>
+    <p style="margin-top:12px;font-size:11px;color:var(--muted)">Payment ke baad niche verify karo ✅</p>
+    <button onclick="verifyPayment()" style="
+      margin-top:8px; background:none; border:1px solid var(--accent);
+      border-radius:10px; padding:8px 16px; color:var(--accent);
+      font-size:13px; cursor:pointer; font-family:inherit; width:100%;
+    ">✅ Maine Pay Kar Diya — Verify Karo</button>
+  </div>
+</div>
+
+<script>
+  const UPI_LINK = "upi://pay?pa=9368660880@ptsbi&pn=NeoNew&am=99&cu=INR";
+
+  let userId = localStorage.getItem('neonew_uid') || "user_" + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem('neonew_uid', userId);
+
+  let points = parseInt(localStorage.getItem('neonew_points') || '140');
+  let isPremium = localStorage.getItem('neonew_premium') === 'true';
+  let isLoading = false;
+
+  function updateStatus() {
+    const el = document.getElementById('pointsDisplay');
+    const chip = document.getElementById('pointsChip');
+    const badge = document.getElementById('premiumBadge');
+    const upgradeBtn = document.getElementById('upgradeBtn');
+    if (isPremium) {
+      el.textContent = 'Unlimited ♾️';
+      badge.style.display = 'flex';
+      upgradeBtn.style.display = 'none';
+      chip.style.borderColor = '#ffd700';
+    } else {
+      el.textContent = `Points: ${points}`;
+      badge.style.display = 'none';
+      upgradeBtn.style.display = 'block';
+      chip.style.borderColor = points <= 30 ? 'var(--danger)' : 'var(--border)';
+    }
+    localStorage.setItem('neonew_points', points);
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function addMessage(role, text) {
+    const welcome = document.getElementById('welcomeScreen');
+    if (welcome) welcome.remove();
+    const chat = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    if (role === 'ai') {
+      div.innerHTML = `<div class="ai-label">🤖 NeoNew</div><div class="bubble">${text}</div>`;
+    } else {
+      div.innerHTML = `<div class="bubble">${text}</div>`;
+    }
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function showTyping() {
+    const chat = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = 'msg ai'; div.id = 'typingIndicator';
+    div.innerHTML = `<div class="ai-label">🤖 NeoNew</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typingIndicator');
+    if (t) t.remove();
+  }
+
+  async function sendMessage() {
+    if (isLoading) return;
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    if (!isPremium && points <= 0) { showModal(); return; }
+
+    input.value = ''; input.style.height = 'auto';
+    addMessage('user', text);
+    isLoading = true;
+    document.getElementById('sendBtn').disabled = true;
+    showTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      removeTyping();
+
+      if (data.error) {
+        addMessage('ai', `⚠️ Error: ${data.error}`);
+      } else {
+        addMessage('ai', data.reply.replace(/\n/g, '<br>'));
+        if (!isPremium) {
+          points = Math.max(0, points - 10);
+          updateStatus();
+          if (points === 0) setTimeout(showModal, 500);
+        }
+      }
+    } catch (err) {
+      removeTyping();
+      addMessage('ai', `⚠️ Server se connect nahi ho paya.`);
+    }
+
+    isLoading = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
+
+  function sendChip(text) { document.getElementById('msgInput').value = text; sendMessage(); }
+  function showModal() { document.getElementById('modalOverlay').classList.add('show'); }
+  function hideModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+  function payNow() { window.location.href = UPI_LINK; }
+
+  async function verifyPayment() {
+    // Manual verify — admin se confirm hone ke baad
+    const code = prompt("Admin se mila verification code daalo:");
+    if (code === "NEONEW99") {
+      isPremium = true;
+      localStorage.setItem('neonew_premium', 'true');
+      updateStatus();
+      hideModal();
+      addMessage('ai', `🎉 <b>Premium Activate ho gaya!</b><br>Ab unlimited chat karo! ⭐`);
+    } else {
+      alert('Galat code! Admin se contact karo.');
+    }
+  }
+
+  document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) hideModal();
+  });
+
+  updateStatus();
+</script>
+</body>
+</html>
