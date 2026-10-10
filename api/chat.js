@@ -13,7 +13,10 @@ export default async function handler(req, res) {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: message }] }]
+          contents: [{ parts: [{ text: message }] }],
+          systemInstruction: {
+            parts: [{ text: "You are NeoNew AI. Always answer directly and helpfully. Use Hindi + English mix. Never ask for context unnecessarily — just answer the question asked." }]
+          }
         })
       }
     );
