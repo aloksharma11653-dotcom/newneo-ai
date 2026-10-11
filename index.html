@@ -1,396 +1,174 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NeoNew AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --card: #16161f;
-    --border: #2a2a3a;
-    --accent: #00e5ff;
-    --accent2: #a259ff;
-    --gold: #ffd700;
-    --danger: #ff4d6d;
-    --text: #e8e8f0;
-    --muted: #6b6b88;
-    --ai-bubble: #0d1f2d;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Rajdhani', 'Noto Sans Devanagari', sans-serif;
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; overflow-x: hidden;
-  }
-  body::before {
-    content: ''; position: fixed; top: -200px; left: 50%;
-    transform: translateX(-50%); width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
-  .app {
-    width: 100%; max-width: 480px; min-height: 100vh;
-    display: flex; flex-direction: column; position: relative; z-index: 1;
-  }
-  .header {
-    padding: 18px 20px 14px; display: flex; align-items: center;
-    justify-content: space-between; border-bottom: 1px solid var(--border);
-    background: rgba(10,10,15,0.95); backdrop-filter: blur(12px);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px; display: flex; align-items: center;
-    justify-content: center; font-size: 18px;
-    box-shadow: 0 0 16px rgba(0,229,255,0.3);
-  }
-  .logo-text {
-    font-size: 22px; font-weight: 700;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
-  }
-  .logo-sub { font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: -2px; }
-  .status-bar {
-    display: flex; gap: 8px; padding: 10px 16px;
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    align-items: center; flex-wrap: wrap;
-  }
-  .points-chip {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 5px 12px;
-    font-size: 13px; font-weight: 600;
-  }
-  .points-chip .dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent); box-shadow: 0 0 6px var(--accent);
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .premium-badge {
-    display: flex; align-items: center; gap: 5px;
-    background: linear-gradient(135deg, #ffd700, #ff8c00);
-    border-radius: 20px; padding: 5px 12px;
-    font-size: 12px; font-weight: 700; color: #000; letter-spacing: 0.5px;
-  }
-  .upgrade-btn {
-    margin-left: auto;
-    background: linear-gradient(135deg, var(--accent2), #7b2fff);
-    border: none; border-radius: 20px; padding: 5px 14px;
-    font-size: 12px; font-weight: 700; color: #fff; cursor: pointer;
-    font-family: inherit; transition: all 0.2s; letter-spacing: 0.5px;
-  }
-  .upgrade-btn:hover { transform: scale(1.05); box-shadow: 0 0 12px rgba(162,89,255,0.4); }
-  .chat-area {
-    flex: 1; overflow-y: auto; padding: 20px 16px;
-    display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
-  }
-  .chat-area::-webkit-scrollbar { width: 4px; }
-  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  .welcome { text-align: center; padding: 40px 20px; animation: fadeUp 0.6s ease; }
-  .welcome-icon { font-size: 56px; margin-bottom: 16px; filter: drop-shadow(0 0 20px rgba(0,229,255,0.4)); }
-  .welcome h2 {
-    font-size: 26px; font-weight: 700; margin-bottom: 8px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .welcome p { color: var(--muted); font-size: 14px; line-height: 1.6; font-family: 'Noto Sans Devanagari', sans-serif; }
-  .suggestion-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
-  .chip {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 7px 14px; font-size: 12px;
-    color: var(--text); cursor: pointer; transition: all 0.2s;
-    font-family: 'Noto Sans Devanagari', sans-serif;
-  }
-  .chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); }
-  .msg { display: flex; flex-direction: column; gap: 4px; animation: fadeUp 0.3s ease; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  .msg.user { align-items: flex-end; }
-  .msg.ai { align-items: flex-start; }
-  .bubble {
-    max-width: 82%; padding: 11px 15px; border-radius: 16px;
-    font-size: 14px; line-height: 1.6;
-    font-family: 'Noto Sans Devanagari', 'Rajdhani', sans-serif;
-  }
-  .msg.user .bubble {
-    background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(162,89,255,0.15));
-    border: 1px solid rgba(0,229,255,0.25); border-bottom-right-radius: 4px;
-  }
-  .msg.ai .bubble { background: var(--ai-bubble); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-  .ai-label { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 2px; }
-  .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 12px 16px; background: var(--ai-bubble); border: 1px solid var(--border); border-radius: 16px; border-bottom-left-radius: 4px; width: fit-content; }
-  .typing-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: typingBounce 1.2s infinite; }
-  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-  .input-area {
-    padding: 12px 14px; background: rgba(10,10,15,0.97);
-    backdrop-filter: blur(12px); border-top: 1px solid var(--border);
-    position: sticky; bottom: 0;
-  }
-  .input-row { display: flex; gap: 10px; align-items: flex-end; }
-  .msg-input {
-    flex: 1; background: var(--card); border: 1px solid var(--border);
-    border-radius: 14px; padding: 12px 16px; color: var(--text);
-    font-size: 14px; font-family: 'Noto Sans Devanagari', 'Rajdhani', sans-serif;
-    resize: none; outline: none; max-height: 120px; line-height: 1.5; transition: border-color 0.2s;
-  }
-  .msg-input:focus { border-color: var(--accent); }
-  .msg-input::placeholder { color: var(--muted); }
-  .send-btn {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none; border-radius: 12px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; transition: all 0.2s; flex-shrink: 0;
-    box-shadow: 0 0 12px rgba(0,229,255,0.25);
-  }
-  .send-btn:hover { transform: scale(1.08); }
-  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85); z-index: 200;
-    align-items: center; justify-content: center; padding: 20px;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 28px 24px;
-    max-width: 360px; width: 100%; text-align: center;
-    animation: fadeUp 0.3s ease; position: relative;
-  }
-  .modal h3 {
-    font-size: 22px; font-weight: 700; margin-bottom: 6px;
-    background: linear-gradient(90deg, var(--gold), #ff8c00);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .modal p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; font-family: 'Noto Sans Devanagari', sans-serif; }
-  .plan-box { background: var(--surface); border: 1px solid var(--gold); border-radius: 14px; padding: 16px; margin-bottom: 20px; }
-  .plan-price { font-size: 36px; font-weight: 700; color: var(--gold); }
-  .plan-price span { font-size: 16px; color: var(--muted); }
-  .plan-features { list-style: none; margin-top: 10px; text-align: left; }
-  .plan-features li { font-size: 13px; padding: 4px 0; color: var(--text); display: flex; align-items: center; gap: 8px; font-family: 'Noto Sans Devanagari', sans-serif; }
-  .plan-features li::before { content: '✓'; color: var(--accent); font-weight: 700; }
-  .pay-btn {
-    width: 100%; background: linear-gradient(135deg, var(--gold), #ff8c00);
-    color: #000; border: none; border-radius: 12px; padding: 14px;
-    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
-    transition: all 0.2s; letter-spacing: 0.5px;
-  }
-  .pay-btn:hover { transform: scale(1.02); }
-  .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+:root{--bg:#0a0a0f;--surface:#111118;--card:#16161f;--border:#2a2a3a;--accent:#00e5ff;--accent2:#a259ff;--gold:#ffd700;--danger:#ff4d6d;--text:#e8e8f0;--muted:#6b6b88;--ai:#0d1f2d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column}
+.header{padding:16px 20px;display:flex;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.95);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:11px;color:var(--muted);letter-spacing:2px}
+.bar{display:flex;gap:8px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center}
+.chip{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.ubtn{margin-left:auto;background:linear-gradient(135deg,var(--accent2),#7b2fff);border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit}
+.chat{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.welcome{text-align:center;padding:40px 20px}
+.wi{font-size:56px;margin-bottom:16px}
+.welcome h2{font-size:26px;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.welcome p{color:var(--muted);font-size:14px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text);cursor:pointer}
+.sc:hover{border-color:var(--accent);color:var(--accent)}
+.msg{display:flex;flex-direction:column;gap:4px;animation:fu 0.3s ease}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.msg.u{align-items:flex-end}
+.msg.a{align-items:flex-start}
+.bubble{max-width:82%;padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.6}
+.msg.u .bubble{background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(162,89,255,0.15));border:1px solid rgba(0,229,255,0.25);border-bottom-right-radius:4px}
+.msg.a .bubble{background:var(--ai);border:1px solid var(--border);border-bottom-left-radius:4px}
+.alabel{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px}
+.typing{display:flex;align-items:center;gap:4px;padding:12px 16px;background:var(--ai);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px}
+.td{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:tb 1.2s infinite}
+.td:nth-child(2){animation-delay:0.2s}.td:nth-child(3){animation-delay:0.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.inp-area{padding:12px 14px;background:rgba(10,10,15,0.97);border-top:1px solid var(--border);position:sticky;bottom:0}
+.inp-row{display:flex;gap:10px;align-items:flex-end}
+textarea{flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;resize:none;outline:none;max-height:120px;line-height:1.5}
+textarea:focus{border-color:var(--accent)}
+textarea::placeholder{color:var(--muted)}
+.sbtn{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;cursor:pointer;font-size:18px;flex-shrink:0}
+.sbtn:disabled{opacity:0.4;cursor:not-allowed}
+#ks{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
+.kb{max-width:360px;width:100%;text-align:center}
+.kb h2{font-size:24px;font-weight:700;margin-bottom:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kb p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
+.ki{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:13px;font-family:monospace;outline:none;margin-bottom:14px}
+.kbtn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:700;color:#000;cursor:pointer;font-family:inherit}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;padding:20px}
+.mo.show{display:flex}
+.md{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center;position:relative}
+.md h3{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--gold),#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.md p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
+.pb{background:var(--surface);border:1px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:20px}
+.pp{font-size:36px;font-weight:700;color:var(--gold)}
+.pf{list-style:none;margin-top:10px;text-align:left}
+.pf li{font-size:13px;padding:4px 0;display:flex;align-items:center;gap:8px}
+.pf li::before{content:'✓';color:var(--accent);font-weight:700}
+.paybtn{width:100%;background:linear-gradient(135deg,var(--gold),#ff8c00);color:#000;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px}
+.vbtn{width:100%;background:none;border:1px solid var(--accent);border-radius:10px;padding:8px 16px;color:var(--accent);font-size:13px;cursor:pointer;font-family:inherit}
+.mc{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">🧠</div>
-      <div>
-        <div class="logo-text">NeoNew</div>
-        <div class="logo-sub">AI ASSISTANT</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="status-bar">
-    <div class="points-chip" id="pointsChip">
-      <span class="dot"></span>
-      <span id="pointsDisplay">Points: 140</span>
-    </div>
-    <div id="premiumBadge" class="premium-badge" style="display:none">⭐ PREMIUM</div>
-    <button class="upgrade-btn" id="upgradeBtn" onclick="showModal()">⚡ Upgrade</button>
-  </div>
-
-  <div class="chat-area" id="chatArea">
-    <div class="welcome" id="welcomeScreen">
-      <div class="welcome-icon">🤖</div>
-      <h2>NeoNew AI</h2>
-      <p>Namaste! Main aapka smart AI assistant hoon.<br>Kuch bhi poocho — Hindi ya English mein!</p>
-      <div class="suggestion-chips">
-        <div class="chip" onclick="sendChip('IPL 2025 ke baare mein batao')">🏏 IPL 2025</div>
-        <div class="chip" onclick="sendChip('AI kya hota hai samjhao')">🤖 AI kya hai?</div>
-        <div class="chip" onclick="sendChip('Paise kaise bachayein tips do')">💰 Paise bachao</div>
-        <div class="chip" onclick="sendChip('Mujhe ek joke sunao')">😂 Joke sunao</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="input-area">
-    <div class="input-row">
-      <textarea class="msg-input" id="msgInput" placeholder="Kuch bhi poocho..." rows="1"
-        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
-    </div>
-  </div>
+<div class="header">
+<div class="logo">
+<div class="logo-icon">🧠</div>
+<div><div class="logo-text">NeoNew</div><div class="logo-sub">AI ASSISTANT</div></div>
 </div>
-
-<!-- PREMIUM MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <button class="modal-close" onclick="hideModal()">✕</button>
-    <div style="font-size:40px;margin-bottom:10px">⭐</div>
-    <h3>NeoNew Premium</h3>
-    <p>Free points khatam hone ke baad bhi<br>unlimited chat karo!</p>
-    <div class="plan-box">
-      <div class="plan-price">₹99 <span>/ month</span></div>
-      <ul class="plan-features">
-        <li>Unlimited messages ♾️</li>
-        <li>Faster responses ⚡</li>
-        <li>Smart AI answers 🧠</li>
-        <li>No ads, no limits 🚫</li>
-      </ul>
-    </div>
-    <button class="pay-btn" onclick="payNow()">💳 UPI se Pay Karo — ₹99</button>
-    <p style="margin-top:12px;font-size:11px;color:var(--muted)">Payment ke baad niche verify karo ✅</p>
-    <button onclick="verifyPayment()" style="
-      margin-top:8px; background:none; border:1px solid var(--accent);
-      border-radius:10px; padding:8px 16px; color:var(--accent);
-      font-size:13px; cursor:pointer; font-family:inherit; width:100%;
-    ">✅ Maine Pay Kar Diya — Verify Karo</button>
-  </div>
 </div>
-
+<div class="bar">
+<div class="chip" id="pc"><span class="dot"></span><span id="pd">Points: 140</span></div>
+<div id="pb2" style="display:none;background:linear-gradient(135deg,#ffd700,#ff8c00);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:#000">⭐ PREMIUM</div>
+<button class="ubtn" id="ub" onclick="showM()">⚡ Upgrade</button>
+</div>
+<div class="chat" id="chat">
+<div class="welcome" id="ws">
+<div class="wi">🤖</div>
+<h2>NeoNew AI</h2>
+<p>Namaste bhai! Main hoon NeoNew AI<br>Kuch bhi poocho — Hindi mein! 😄</p>
+<div class="chips">
+<div class="sc" onclick="sc('IPL 2025 ke baare mein batao')">🏏 IPL 2025</div>
+<div class="sc" onclick="sc('AI kya hota hai samjhao')">🤖 AI kya hai?</div>
+<div class="sc" onclick="sc('Paise kaise bachayein tips do')">💰 Paise bachao</div>
+<div class="sc" onclick="sc('Ek funny joke sunao')">😂 Joke sunao</div>
+</div>
+</div>
+</div>
+<div class="inp-area">
+<div class="inp-row">
+<textarea id="mi" placeholder="Kuch bhi poocho bhai..." rows="1" onkeydown="hk(event)" oninput="ar(this)"></textarea>
+<button class="sbtn" id="sb" onclick="send()">➤</button>
+</div>
+</div>
+</div>
+<div id="ks">
+<div class="kb">
+<div style="font-size:52px;margin-bottom:16px">🔑</div>
+<h2>Gemini API Key Daalo</h2>
+<p>Google AI Studio se free key lo:<br>aistudio.google.com<br><br>Key sirf tumhare device mein save hogi 🔒</p>
+<input class="ki" id="ki" type="password" placeholder="AIzaSy..."/>
+<button class="kbtn" onclick="sk()">✅ Save Karo & Start Karo</button>
+</div>
+</div>
+<div class="mo" id="mo">
+<div class="md">
+<button class="mc" onclick="hideM()">✕</button>
+<div style="font-size:40px;margin-bottom:10px">⭐</div>
+<h3>NeoNew Premium</h3>
+<p>Free points khatam — Premium lo!</p>
+<div class="pb">
+<div class="pp">₹99 <span style="font-size:16px;color:var(--muted)">/month</span></div>
+<ul class="pf">
+<li>Unlimited messages ♾️</li>
+<li>Faster responses ⚡</li>
+<li>Smart AI 🧠</li>
+<li>No limits 🚫</li>
+</ul>
+</div>
+<button class="paybtn" onclick="pay()">💳 UPI se Pay — ₹99</button>
+<button class="vbtn" onclick="verify()">✅ Maine Pay Kar Diya</button>
+</div>
+</div>
 <script>
-  const UPI_LINK = "upi://pay?pa=9368660880@ptsbi&pn=NeoNew&am=99&cu=INR";
-
-  let userId = localStorage.getItem('neonew_uid') || "user_" + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem('neonew_uid', userId);
-
-  let points = parseInt(localStorage.getItem('neonew_points') || '140');
-  let isPremium = localStorage.getItem('neonew_premium') === 'true';
-  let isLoading = false;
-
-  function updateStatus() {
-    const el = document.getElementById('pointsDisplay');
-    const chip = document.getElementById('pointsChip');
-    const badge = document.getElementById('premiumBadge');
-    const upgradeBtn = document.getElementById('upgradeBtn');
-    if (isPremium) {
-      el.textContent = 'Unlimited ♾️';
-      badge.style.display = 'flex';
-      upgradeBtn.style.display = 'none';
-      chip.style.borderColor = '#ffd700';
-    } else {
-      el.textContent = `Points: ${points}`;
-      badge.style.display = 'none';
-      upgradeBtn.style.display = 'block';
-      chip.style.borderColor = points <= 30 ? 'var(--danger)' : 'var(--border)';
-    }
-    localStorage.setItem('neonew_points', points);
-  }
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  }
-
-  function addMessage(role, text) {
-    const welcome = document.getElementById('welcomeScreen');
-    if (welcome) welcome.remove();
-    const chat = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
-    if (role === 'ai') {
-      div.innerHTML = `<div class="ai-label">🤖 NeoNew</div><div class="bubble">${text}</div>`;
-    } else {
-      div.innerHTML = `<div class="bubble">${text}</div>`;
-    }
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function showTyping() {
-    const chat = document.getElementById('chatArea');
-    const div = document.createElement('div');
-    div.className = 'msg ai'; div.id = 'typingIndicator';
-    div.innerHTML = `<div class="ai-label">🤖 NeoNew</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function removeTyping() {
-    const t = document.getElementById('typingIndicator');
-    if (t) t.remove();
-  }
-
-  async function sendMessage() {
-    if (isLoading) return;
-    const input = document.getElementById('msgInput');
-    const text = input.value.trim();
-    if (!text) return;
-
-    if (!isPremium && points <= 0) { showModal(); return; }
-
-    input.value = ''; input.style.height = 'auto';
-    addMessage('user', text);
-    isLoading = true;
-    document.getElementById('sendBtn').disabled = true;
-    showTyping();
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await res.json();
-      removeTyping();
-
-      if (data.error) {
-        addMessage('ai', `⚠️ Error: ${data.error}`);
-      } else {
-        addMessage('ai', data.reply.replace(/\n/g, '<br>'));
-        if (!isPremium) {
-          points = Math.max(0, points - 10);
-          updateStatus();
-          if (points === 0) setTimeout(showModal, 500);
-        }
-      }
-    } catch (err) {
-      removeTyping();
-      addMessage('ai', `⚠️ Server se connect nahi ho paya.`);
-    }
-
-    isLoading = false;
-    document.getElementById('sendBtn').disabled = false;
-  }
-
-  function sendChip(text) { document.getElementById('msgInput').value = text; sendMessage(); }
-  function showModal() { document.getElementById('modalOverlay').classList.add('show'); }
-  function hideModal() { document.getElementById('modalOverlay').classList.remove('show'); }
-  function payNow() { window.location.href = UPI_LINK; }
-
-  async function verifyPayment() {
-    // Manual verify — admin se confirm hone ke baad
-    const code = prompt("Admin se mila verification code daalo:");
-    if (code === "NEONEW99") {
-      isPremium = true;
-      localStorage.setItem('neonew_premium', 'true');
-      updateStatus();
-      hideModal();
-      addMessage('ai', `🎉 <b>Premium Activate ho gaya!</b><br>Ab unlimited chat karo! ⭐`);
-    } else {
-      alert('Galat code! Admin se contact karo.');
-    }
-  }
-
-  document.getElementById('modalOverlay').addEventListener('click', function(e) {
-    if (e.target === this) hideModal();
-  });
-
-  updateStatus();
+let KEY=localStorage.getItem('ngk')||'';
+let pts=parseInt(localStorage.getItem('np')||'140');
+let prem=localStorage.getItem('npm')==='true';
+let busy=false;
+const UPI='upi://pay?pa=9368660880@ptsbi&pn=NeoNew&am=99&cu=INR';
+const SYS='Tu NeoNew AI hai — ek desi smart assistant! Rules: 1) Hamesha Hindi mein baat kar 2) Short aur clear jawab de 3) Funny aur friendly reh 4) Expert ki tarah baat kar 5) Emojis use kar! Agar koi owner ya creator ke baare mein pooche toh bol: Is app ke owner hain Tanmay Sharma, address: Birauli';
+if(KEY)document.getElementById('ks').style.display='none';
+function sk(){const k=document.getElementById('ki').value.trim();if(!k){alert('Key daalo!');return;}localStorage.setItem('ngk',k);KEY=k;document.getElementById('ks').style.display='none';}
+function us(){const e=document.getElementById('pd');if(prem){e.textContent='Unlimited ♾️';document.getElementById('pb2').style.display='flex';document.getElementById('ub').style.display='none';document.getElementById('pc').style.borderColor='#ffd700';}else{e.textContent='Points: '+pts;document.getElementById('pc').style.borderColor=pts<=30?'var(--danger)':'var(--border)';}localStorage.setItem('np',pts);}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function am(role,text){const w=document.getElementById('ws');if(w)w.remove();const c=document.getElementById('chat');const d=document.createElement('div');d.className='msg '+role;d.innerHTML=role==='a'?`<div class="alabel">🤖 NeoNew</div><div class="bubble">${text}</div>`:`<div class="bubble">${text}</div>`;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function st(){const c=document.getElementById('chat');const d=document.createElement('div');d.className='msg a';d.id='ti';d.innerHTML='<div class="alabel">🤖 NeoNew</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function rt(){const t=document.getElementById('ti');if(t)t.remove();}
+async function send(){
+if(busy)return;
+const inp=document.getElementById('mi');
+const text=inp.value.trim();
+if(!text)return;
+if(!KEY){document.getElementById('ks').style.display='flex';return;}
+if(!prem&&pts<=0){showM();return;}
+inp.value='';inp.style.height='auto';
+am('u',text);busy=true;
+document.getElementById('sb').disabled=true;st();
+try{
+const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${KEY}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:text}]}],systemInstruction:{parts:[{text:SYS}]}})});
+const d=await r.json();rt();
+if(d.error){am('a','⚠️ Error: '+d.error.message);}
+else{am('a',d.candidates[0].content.parts[0].text.replace(/\n/g,'<br>'));if(!prem){pts=Math.max(0,pts-10);us();if(pts===0)setTimeout(showM,500);}}
+}catch(e){rt();am('a','⚠️ Error: '+e.message);}
+busy=false;document.getElementById('sb').disabled=false;
+}
+function sc(t){document.getElementById('mi').value=t;send();}
+function showM(){document.getElementById('mo').classList.add('show');}
+function hideM(){document.getElementById('mo').classList.remove('show');}
+function pay(){window.location.href=UPI;}
+function verify(){const c=prompt('Verification code:');if(c==='NEONEW99'){prem=true;localStorage.setItem('npm','true');us();hideM();am('a','🎉 Premium Activate! Ab unlimited chat karo! ⭐');}else alert('Galat code!');}
+document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)hideM();});
+us();
 </script>
 </body>
 </html>
