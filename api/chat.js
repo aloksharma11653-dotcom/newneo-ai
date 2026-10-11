@@ -1,17 +1,21 @@
 
 export default async function handler(req, res) {
+  // Only allow POST requests
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({
-      error: "Only POST requests are allowed."
+      error: "Method not allowed. Please send a POST request."
     });
   }
 
+  // Read secret key from Vercel
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
+    console.error("Missing GEMINI_API_KEY environment variable");
+
     return res.status(500).json({
-      error: "GEMINI_API_KEY missing. Add it in Vercel Environment Variables."
+      error: "GEMINI_API_KEY missing. Add it in Vercel Settings > Environment Variables, then redeploy."
     });
   }
 
@@ -26,11 +30,11 @@ export default async function handler(req, res) {
 
     if (message.length > 30000) {
       return res.status(413).json({
-        error: "Message is too long. Please shorten it."
+        error: "Message too long. Please shorten it."
       });
     }
 
-    const response = await fetch(
+    const googleResponse = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/interactions",
       {
         method: "POST",
@@ -40,42 +44,66 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           model: "gemini-3.8-flash",
-          input: message
+          input: message.trim()
         })
       }
     );
 
-    const data = await response.json();
+    const data = await googleResponse.json();
 
-    if (!response.ok) {
-      console.error("Gemini API error:", data.error?.message);
+    if (!googleResponse.ok) {
+      console.error(
+        "Gemini API error:",
+        googleResponse.status,
+        data?.error?.message || "Unknown error"
+      );
 
-      return res.status(response.status).json({
-        error: data.error?.message || "Gemini API request failed."
+      return res.status(googleResponse.status >= 400 &&
+        googleResponse.status < 500 ? 502 : 500).json({
+        error:
+          data?.error?.message ||
+          `Gemini API request failed (${googleResponse.status}). Check your model and API access.`
       });
     }
 
-    const answer =
-      data.output_text ||
-      (Array.isArray(data.outputs)
-        ? data.outputs.map(item => item.text || "").join("\n")
-        : "");
+    let reply = "";
 
-    if (!answer.trim()) {
+    if (typeof data.output_text === "string") {
+      reply = data.output_text;
+    } else if (Array.isArray(data.outputs)) {
+      reply = data.outputs
+        .map(item => {
+          if (typeof item.text === "string") return item.text;
+
+          if (Array.isArray(item.content)) {
+            return item.content
+              .map(part => part.text || "")
+              .join("");
+          }
+
+          return "";
+        })
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    if (!reply.trim()) {
+      console.error("Gemini returned no text output.");
+
       return res.status(502).json({
-        error: "Gemini returned an empty response."
+        error: "Gemini returned an empty answer. Check the model response format."
       });
     }
 
     return res.status(200).json({
-      reply: answer
+      reply: reply.trim()
     });
 
   } catch (error) {
-    console.error("Chat backend error:", error);
+    console.error("NeoNew AI backend error:", error);
 
     return res.status(500).json({
-      error: "AI server error. Please try again."
+      error: "Server error while contacting Gemini. Please try again."
     });
   }
 }
