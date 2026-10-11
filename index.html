@@ -1,317 +1,382 @@
 
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b16">
 <title>NeoNew AI</title>
 <style>
-:root{--bg:#090b12;--card:#131824;--border:#293247;--cyan:#00e5ff;--purple:#9b5cff;--text:#edf3ff;--muted:#94a3b8}
 *{box-sizing:border-box}
+:root{--bg:#080b16;--panel:#111629;--border:#28304a;--cyan:#43e8ff;--purple:#a78bfa;--text:#f4f6ff;--muted:#9ca7c2}
 body{margin:0;background:var(--bg);color:var(--text);font:15px Arial,sans-serif}
 button,input,textarea{font:inherit}
 button{cursor:pointer}
-button:disabled{opacity:.5}
-.app{height:100dvh;display:flex;flex-direction:column;max-width:1000px;margin:auto}
-header{height:64px;display:flex;align-items:center;gap:12px;padding:0 15px;border-bottom:1px solid var(--border);background:#0c101a}
-.logo{font-size:22px;font-weight:bold;background:linear-gradient(90deg,var(--cyan),var(--purple));color:transparent;background-clip:text}
-.small{font-size:12px;color:var(--muted)}
-.spacer{flex:1}
-.btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text)}
-.primary{background:linear-gradient(120deg,var(--cyan),var(--purple));color:#050914;border:0;font-weight:bold}
-.layout{flex:1;min-height:0;display:flex}
-.sidebar{width:245px;flex-shrink:0;border-right:1px solid var(--border);padding:12px;display:flex;flex-direction:column;gap:10px;background:#0c101a}
-.history{overflow:auto;flex:1}
-.history button{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;margin:4px 0}
-.main{flex:1;min-width:0;display:flex;flex-direction:column}
-.toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.plan{font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:20px}
-.messages{flex:1;overflow:auto;padding:22px 15px;display:flex;flex-direction:column;gap:18px}
-.welcome{text-align:center;margin:auto;max-width:440px;padding:24px}
-.welcome .brain{font-size:55px}
-.welcome h1{font-size:30px;background:linear-gradient(90deg,var(--cyan),var(--purple));color:transparent;background-clip:text}
+.app{display:flex;min-height:100dvh}
+.sidebar{width:255px;background:#0c1020;border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:12px}
+.logo{font-size:24px;font-weight:800;background:linear-gradient(90deg,var(--cyan),var(--purple));background-clip:text;color:transparent;padding:8px 0}
+.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:11px 13px;border-radius:12px}
+.btn:hover{border-color:var(--cyan)}
+.primary{background:linear-gradient(100deg,#087fba,#7546c9);border:0}
+.history{display:flex;flex-direction:column;gap:6px;overflow:auto}
+.history button{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebottom{margin-top:auto;display:grid;gap:9px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100dvh}
+.top{height:60px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:8px}
+.top strong{font-size:17px}
+.top-actions{display:flex;gap:8px}
+.messages{flex:1;overflow:auto;padding:24px 16px 30px}
+.welcome{max-width:700px;margin:12vh auto 30px;text-align:center}
+.welcome h1{font-size:clamp(28px,5vw,44px);margin:12px 0;background:linear-gradient(90deg,var(--cyan),var(--purple));background-clip:text;color:transparent}
 .welcome p{color:var(--muted);line-height:1.6}
-.suggestions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.suggestions button{font-size:13px}
-.msg{max-width:85%;line-height:1.7;padding:13px 15px;border:1px solid var(--border);border-radius:15px;overflow-wrap:anywhere;white-space:pre-wrap}
-.user{align-self:flex-end;background:#132638}
-.ai{align-self:flex-start;background:#131b29}
-.msg img{max-width:100%;border-radius:8px}
-.composer{padding:12px;border-top:1px solid var(--border);background:#0c101a}
-.filelist{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.filetag{padding:5px 8px;border:1px solid var(--border);border-radius:8px;font-size:12px}
-.inputbox{border:1px solid #354158;background:var(--card);border-radius:16px;padding:10px}
-textarea{width:100%;resize:vertical;min-height:48px;max-height:150px;background:transparent;border:0;outline:0;color:var(--text);padding:8px}
-.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.actions .hint{font-size:11px;color:var(--muted);margin-right:auto}
-.overlay{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:16px;z-index:5}
-.overlay.show{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;width:100%;max-width:390px;max-height:90dvh;overflow:auto}
-.modal h2{margin-top:0}
-.modal input{width:100%;padding:12px;margin:7px 0;background:#090e18;color:white;border:1px solid var(--border);border-radius:9px}
-.modal button{width:100%;margin-top:9px}
-.close{float:right;width:auto!important;margin:0!important}
-.tabs{display:flex;gap:8px}
-.tabs button{flex:1}
-.hidden{display:none!important}
-@media(max-width:650px){
- .sidebar{position:fixed;z-index:3;top:64px;bottom:0;left:0;width:275px;transform:translateX(-105%);transition:.2s}
- .sidebar.open{transform:translateX(0)}
- .msg{max-width:95%}
- header{height:58px}
+.suggestions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px}
+.message{max-width:820px;margin:0 auto 20px;display:flex;gap:12px;align-items:flex-start}
+.avatar{flex-shrink:0;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#202943}
+.bubble{min-width:0;flex:1;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;padding:9px 0}
+.user .bubble{background:#151c31;padding:13px;border:1px solid var(--border);border-radius:14px}
+.attach-preview{font-size:12px;color:var(--cyan);margin-top:8px}
+.composer-wrap{padding:12px 16px 18px;background:linear-gradient(transparent,var(--bg) 20%)}
+.composer{max-width:820px;margin:auto;border:1px solid #343d5c;background:#111629;border-radius:18px;padding:10px}
+#prompt{display:block;width:100%;resize:none;max-height:150px;min-height:45px;background:transparent;color:var(--text);border:0;outline:none;padding:8px}
+.compose-actions{display:flex;align-items:center;gap:8px}
+.compose-actions .spacer{flex:1}
+.hint{text-align:center;color:var(--muted);font-size:11px;margin:9px auto 0}
+input[type=file]{display:none}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}
+.modal.show{display:flex}
+.dialog{width:min(420px,100%);background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px}
+.dialog h2{margin-top:0}
+.field{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#080b16;color:white;margin:8px 0 14px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.mobile-menu{display:none}
+@media(max-width:700px){
+ .sidebar{position:fixed;z-index:4;left:-280px;top:0;bottom:0;transition:left .2s;box-shadow:10px 0 30px #0007}
+ .sidebar.open{left:0}
+ .mobile-menu{display:inline-block}
+ .top{padding:0 10px}
+ .top-actions .btn{padding:9px}
+ .messages{padding:18px 12px}
+ .composer-wrap{padding:8px 10px 12px}
+ .welcome{margin-top:10vh}
 }
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-<button class="btn" onclick="toggleSide()">☰</button>
-<div><div class="logo">🧠 NeoNew AI</div><div class="small">YOUR AI ASSISTANT</div></div>
-<div class="spacer"></div>
-<button class="btn" onclick="openModal('account')">👤 Account</button>
-</header>
-
-<div class="layout">
 <aside class="sidebar" id="sidebar">
-<button class="btn primary" onclick="newChat()">＋ New Chat</button>
-<div class="small">RECENT CHATS</div>
-<div class="history" id="history"></div>
-<button class="btn" onclick="openModal('plans')">⭐ Upgrade to Pro</button>
-<button class="btn" onclick="openModal('settings')">⚙ Settings / API Key</button>
-<div class="small">NeoNew AI • Chat history on this device</div>
+  <div class="logo">✦ NeoNew AI</div>
+  <button class="btn primary" id="newChat">＋ New chat</button>
+  <div style="color:var(--muted);font-size:12px;margin-top:10px">CHAT HISTORY</div>
+  <div class="history" id="history"></div>
+  <div class="sidebottom">
+    <button class="btn" id="apiSettings">⚙ Gemini API settings</button>
+    <button class="btn" id="accountBtn">👤 Account / Login</button>
+    <button class="btn" id="proBtn">✦ NeoNew Pro — ₹50/month</button>
+  </div>
 </aside>
 
 <main class="main">
-<div class="toolbar">
-<span class="plan" id="planLabel">Free Plan</span>
-<div class="spacer"></div>
-<button class="btn" onclick="newChat()">＋ New</button>
-<button class="btn" onclick="openModal('plans')">⭐ Pro ₹50/month</button>
-</div>
+<header class="top">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="btn mobile-menu" id="menuBtn">☰</button>
+    <strong>NeoNew AI <span style="color:var(--cyan)">✦</span></strong>
+  </div>
+  <div class="top-actions">
+    <button class="btn" id="exportBtn">Export</button>
+  </div>
+</header>
 
-<div class="messages" id="messages">
-<div class="welcome" id="welcome">
-<div class="brain">🤖</div>
-<h1>NeoNew AI</h1>
-<p>Namaste bhai! Aaj kya seekhna hai? Hindi, Hinglish ya English mein poochho.</p>
-<div class="suggestions">
-<button class="btn" onclick="suggest('AI kya hota hai simple Hindi mein samjhao')">🤖 AI kya hai?</button>
-<button class="btn" onclick="suggest('Class 10 ke liye study timetable banao')">📚 Study Plan</button>
-<button class="btn" onclick="suggest('Ek funny clean joke sunao')">😂 Joke</button>
-</div>
-</div>
-</div>
+<section class="messages" id="messages">
+  <div class="welcome" id="welcome">
+    <div style="font-size:32px">✦</div>
+    <h1>What can I help you with?</h1>
+    <p>Ask questions, learn new things, write scripts, brainstorm ideas and more.</p>
+    <div class="suggestions">
+      <button class="btn suggestion">Explain a difficult topic</button>
+      <button class="btn suggestion">Write a YouTube script</button>
+      <button class="btn suggestion">Help me study for exams</button>
+      <button class="btn suggestion">Build a website</button>
+    </div>
+  </div>
+</section>
 
-<div class="composer">
-<div id="filelist" class="filelist"></div>
-<div class="inputbox">
-<textarea id="prompt" rows="2" placeholder="NeoNew se kuch bhi poochho..." onkeydown="handleKey(event)"></textarea>
-<div class="actions">
-<button class="btn" onclick="document.getElementById('files').click()">📎 Attach</button>
-<input id="files" type="file" multiple accept="image/*,.txt,.md,.csv,.json,.pdf" hidden onchange="selectFiles(event)">
-<span class="hint">Enter = Send • Shift+Enter = New line</span>
-<button class="btn primary" id="sendBtn" onclick="send()">➤ Send</button>
-</div>
-</div>
-<div class="small" style="margin-top:7px">AI answers can be incorrect. Check important information.</div>
+<div class="composer-wrap">
+  <div class="composer">
+    <textarea id="prompt" rows="2" placeholder="Message NeoNew AI..."></textarea>
+    <div id="attachmentPreview" class="attach-preview"></div>
+    <div class="compose-actions">
+      <label class="btn" for="fileInput">＋ Attach</label>
+      <input id="fileInput" type="file" accept=".txt,.md,.csv,.json,.html,.js,.css,.py,.pdf,image/*">
+      <button class="btn" id="voiceBtn" title="Read responses aloud">🔊</button>
+      <span class="spacer"></span>
+      <button class="btn primary" id="sendBtn">Send ➤</button>
+    </div>
+  </div>
+  <div class="hint">AI can make mistakes. Verify important information.</div>
 </div>
 </main>
 </div>
+
+<div class="modal" id="settingsModal">
+  <div class="dialog">
+    <h2>Gemini API settings</h2>
+    <p class="small">Enter your Gemini API key to use AI chat. For production, connect a secure backend instead of exposing your key in browser storage.</p>
+    <label for="apiKey">Gemini API key</label>
+    <input class="field" id="apiKey" type="password" placeholder="Paste API key">
+    <button class="btn primary" id="saveKey">Save key</button>
+    <button class="btn" id="closeSettings">Close</button>
+    <p class="small">The key is stored in this browser on this device. Do not use a shared device.</p>
+  </div>
 </div>
 
-<!-- ACCOUNT -->
-<div class="overlay" id="account">
-<div class="modal">
-<button class="btn close" onclick="closeModal('account')">✕</button>
-<h2>👤 NeoNew Account</h2>
-<p class="small">Login provider connect hone ke baad hi real account create hoga.</p>
-<div class="tabs">
-<button class="btn" onclick="setAuth('login')">Login</button>
-<button class="btn" onclick="setAuth('signup')">Sign Up</button>
-</div>
-<form id="authForm" onsubmit="demoAuth(event)">
-<h3 id="authTitle">Login</h3>
-<input id="authName" placeholder="Your name (signup)" class="hidden">
-<input id="authEmail" type="email" placeholder="Email address" required>
-<input id="authPass" type="password" placeholder="Password (minimum 8 characters)" minlength="8" required>
-<button class="btn primary" type="submit">Continue with Email</button>
-</form>
-<button class="btn" onclick="providerInfo('Google')">🌐 Continue with Google</button>
-<button class="btn" onclick="providerInfo('Facebook')">ⓕ Continue with Facebook</button>
-<p class="small" id="authNote">Email form is a demo only; it does not create a secure account.</p>
-<button class="btn" onclick="closeModal('account')">Close</button>
-</div>
+<div class="modal" id="accountModal">
+  <div class="dialog">
+    <h2>Account</h2>
+    <p class="small">Login providers need a real authentication service and backend configuration before they can securely create accounts.</p>
+    <button class="btn" id="googleBtn">Continue with Google</button>
+    <button class="btn" id="facebookBtn">Continue with Facebook</button>
+    <label for="email">Email</label>
+    <input class="field" id="email" type="email" placeholder="you@example.com">
+    <label for="password">Password</label>
+    <input class="field" id="password" type="password" placeholder="Password">
+    <button class="btn primary" id="emailLogin">Continue with email</button>
+    <button class="btn" id="closeAccount">Close</button>
+    <p class="small" id="authMessage">These buttons are interface placeholders, not real authentication.</p>
+  </div>
 </div>
 
-<!-- SETTINGS -->
-<div class="overlay" id="settings">
-<div class="modal">
-<button class="btn close" onclick="closeModal('settings')">✕</button>
-<h2>⚙ Settings</h2>
-<label>Gemini API Key</label>
-<input id="apiKey" type="password" placeholder="Paste your Gemini API key">
-<button class="btn primary" onclick="saveKey()">Save API Key</button>
-<p class="small">Demo setup: the key is stored in this browser. For a public website, use a server-side API proxy instead.</p>
-<button class="btn" onclick="forgetKey()">Remove saved key</button>
-<hr style="border-color:var(--border);margin:18px 0">
-<button class="btn" onclick="clearHistory()">🗑 Delete all local chats</button>
-<button class="btn" onclick="closeModal('settings')">Close</button>
-</div>
-</div>
-
-<!-- PLANS -->
-<div class="overlay" id="plans">
-<div class="modal">
-<button class="btn close" onclick="closeModal('plans')">✕</button>
-<h2>⭐ Choose your plan</h2>
-<div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0">
-<h3>Free</h3><p>₹0</p>
-<p class="small">Normal chat with a fair-use limit configured on the server.</p>
-<button class="btn" onclick="closeModal('plans')">Continue Free</button>
-</div>
-<div style="border:1px solid #ffd700;border-radius:12px;padding:14px;margin:12px 0">
-<h3>👑 NeoNew Pro</h3>
-<div style="font-size:30px">₹50 <span class="small">/ month</span></div>
-<p class="small">Higher usage limits and extra features, subject to provider limits.</p>
-<button class="btn primary" onclick="paymentInfo()">Continue to Pro</button>
-</div>
-<p class="small">Pro is not activated by this demo. Add a payment gateway and server-side payment verification before accepting payments.</p>
-</div>
+<div class="modal" id="proModal">
+  <div class="dialog">
+    <h2>✦ NeoNew Pro</h2>
+    <p>Planned subscription: ₹50/month.</p>
+    <p class="small">Payments, subscription verification and Pro access must be connected to a secure payment backend. This screen does not charge you.</p>
+    <button class="btn" id="closePro">Close</button>
+  </div>
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const STORE='neonew_chats_v2';
-let chats=loadChats(), currentId=null, files=[], busy=false;
-let API_KEY=localStorage.getItem('neonew_demo_key')||'';
-let authMode='login';
+const $ = id => document.getElementById(id);
+const MODEL = "gemini-3.8-flash";
+let apiKey = localStorage.getItem("neonew_gemini_key") || "";
+let attachment = null;
+let busy = false;
+let currentId = null;
+let chats = JSON.parse(localStorage.getItem("neonew_chats") || "[]");
 
-function loadChats(){
- try{return JSON.parse(localStorage.getItem(STORE)||'[]')}catch{return []}
+function saveChats(){
+  localStorage.setItem("neonew_chats", JSON.stringify(chats));
+  renderHistory();
 }
-function persist(){
- try{localStorage.setItem(STORE,JSON.stringify(chats))}catch(e){alert('Storage full. Delete some old chats or attachments.')}
+function currentChat(){
+  return chats.find(c => c.id === currentId);
 }
-function current(){return chats.find(c=>c.id===currentId)}
 function newChat(){
- currentId=null;files=[];$('prompt').value='';renderFiles();renderMessages();renderHistory();closeAll();
- $('sidebar').classList.remove('open');
+  currentId = String(Date.now());
+  chats.unshift({id:currentId,title:"New chat",messages:[]});
+  $("messages").innerHTML = "";
+  showWelcome();
+  saveChats();
+  $("sidebar").classList.remove("open");
 }
-function createChat(text){
- const c={id:Date.now().toString()+Math.random().toString(36).slice(2,6),title:text.slice(0,35)||'New Chat',messages:[],updated:Date.now()};
- chats.unshift(c);currentId=c.id;return c;
+function showWelcome(){
+  $("messages").innerHTML = `
+    <div class="welcome" id="welcome">
+      <div style="font-size:32px">✦</div>
+      <h1>What can I help you with?</h1>
+      <p>Ask questions, learn new things, write scripts, brainstorm ideas and more.</p>
+      <div class="suggestions">
+        <button class="btn suggestion">Explain a difficult topic</button>
+        <button class="btn suggestion">Write a YouTube script</button>
+        <button class="btn suggestion">Help me study for exams</button>
+        <button class="btn suggestion">Build a website</button>
+      </div>
+    </div>`;
+  bindSuggestions();
 }
 function renderHistory(){
- $('history').innerHTML='';
- chats.forEach(c=>{
-  const b=document.createElement('button');
-  b.className='btn';b.textContent=(c.id===currentId?'● ':'')+c.title;
-  b.onclick=()=>openChat(c.id);
-  b.oncontextmenu=e=>{e.preventDefault();if(confirm('Delete this chat?')){chats=chats.filter(x=>x.id!==c.id);if(currentId===c.id)currentId=null;persist();renderHistory();renderMessages()}};
-  $('history').appendChild(b);
- });
-}
-function openChat(id){currentId=id;renderMessages();renderHistory();$('sidebar').classList.remove('open')}
-function renderMessages(){
- const box=$('messages');box.innerHTML='';
- const c=current();
- if(!c||!c.messages.length){
-  const w=document.createElement('div');w.className='welcome';
-  w.innerHTML='<div class="brain">🤖</div><h1>NeoNew AI</h1><p>Namaste bhai! Aaj kya seekhna hai?</p>';
-  box.appendChild(w);return;
- }
- c.messages.forEach(m=>{
-  const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');
-  d.textContent=m.text;
-  if(m.fileNames?.length){const f=document.createElement('div');f.className='small';f.textContent='📎 '+m.fileNames.join(', ');d.appendChild(f)}
-  box.appendChild(d);
- });
- box.scrollTop=box.scrollHeight;
-}
-function addMessage(role,text,fileNames=[]){
- const c=current()||createChat(text);
- c.messages.push({role,text,fileNames});c.updated=Date.now();
- if(role==='user'&&c.messages.length===1)c.title=text.slice(0,35)||'New Chat';
- persist();renderMessages();renderHistory();
-}
-function selectFiles(e){
- const incoming=Array.from(e.target.files||[]);
- files=[...files,...incoming].slice(0,4);
- renderFiles();e.target.value='';
-}
-function renderFiles(){
- $('filelist').innerHTML='';
- files.forEach((f,i)=>{
-  const b=document.createElement('button');b.className='filetag btn';
-  b.textContent='📎 '+f.name+' ×';
-  b.onclick=()=>{files.splice(i,1);renderFiles()};
-  $('filelist').appendChild(b);
- });
-}
-function suggest(t){$('prompt').value=t;send()}
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}
-function toggleSide(){$('sidebar').classList.toggle('open')}
-function openModal(id){$(id).classList.add('show')}
-function closeModal(id){$(id).classList.remove('show')}
-function closeAll(){document.querySelectorAll('.overlay').forEach(x=>x.classList.remove('show'))}
-function saveKey(){
- const k=$('apiKey').value.trim();
- if(!k)return alert('API key paste karo.');
- API_KEY=k;localStorage.setItem('neonew_demo_key',k);
- alert('Key saved in this browser. Public website par server proxy use karna.');closeModal('settings');
-}
-function forgetKey(){API_KEY='';localStorage.removeItem('neonew_demo_key');$('apiKey').value='';alert('Saved key removed.')}
-async function send(){
- if(busy)return;
- const prompt=$('prompt').value.trim();
- if(!prompt&&!files.length)return;
- if(!API_KEY){openModal('settings');return}
- if(files.some(f=>f.size>5*1024*1024)){alert('Har file 5 MB se chhoti rakho.');return}
- const chosen=files.slice();
- const userText=prompt||'Please analyse the attached file(s).';
- const fileNames=chosen.map(f=>f.name);
- addMessage('user',userText,fileNames);
- $('prompt').value='';files=[];renderFiles();
- busy=true;$('sendBtn').disabled=true;$('sendBtn').textContent='…';
- const loading=document.createElement('div');loading.className='msg ai';loading.textContent='🤖 NeoNew soch raha hai…';loading.id='loading';
- $('messages').appendChild(loading);$('messages').scrollTop=$('messages').scrollHeight;
- try{
-  const parts=[{text:'You are NeoNew AI, a helpful, friendly assistant. Reply in the language the user uses. Be clear and accurate.\n\nUser: '+userText}];
-  for(const f of chosen){
-   if(f.type.startsWith('image/')){
-    const data=await readDataURL(f);
-    parts.push({inline_data:{mime_type:f.type,data:data.split(',')[1]}});
-   }else if(/\.(txt|md|csv|json)$/i.test(f.name)||f.type.startsWith('text/')){
-    parts.push({text:'Attachment '+f.name+':\n'+(await f.text()).slice(0,30000)});
-   }else if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){
-    parts.push({text:'The user attached PDF "'+f.name+'". This simple HTML demo cannot extract PDF text. Ask the user to paste the relevant text or configure a secure backend with PDF processing.'});
-   }else{
-    parts.push({text:'Attachment "'+f.name+'" is not supported by this demo.'});
-   }
-  }
-  const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(API_KEY),{
-   method:'POST',headers:{'Content-Type':'application/json'},
-   body:JSON.stringify({contents:[{role:'user',parts}]})
+  $("history").innerHTML = "";
+  chats.forEach(chat => {
+    const b = document.createElement("button");
+    b.className = "btn";
+    b.textContent = chat.title || "New chat";
+    b.onclick = () => loadChat(chat.id);
+    $("history").appendChild(b);
   });
-  const data=await response.json();
-  if(!response.ok)throw new Error(data.error?.message||'API request failed');
-  const answer=data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim();
-  if(!answer)throw new Error('AI returned no text. Try again.');
-  $('loading')?.remove();addMessage('assistant',answer);
- }catch(err){
-  $('loading')?.remove();addMessage('assistant','⚠️ Error: '+err.message+'\n\nAPI key, internet connection aur model availability check karo.');
- }finally{
-  busy=false;$('sendBtn').disabled=false;$('sendBtn').textContent='➤ Send';
- }
 }
-function readDataURL(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
-function clearHistory(){if(confirm('All saved chats on this device will be deleted. Continue?')){chats=[];currentId=null;persist();renderHistory();renderMessages();closeModal('settings')}}
-function setAuth(mode){authMode=mode;$('authTitle').textContent=mode==='signup'?'Create Account':'Login';$('authName').classList.toggle('hidden',mode!=='signup');$('authName').required=mode==='signup'}
-function demoAuth(e){e.preventDefault();alert('Demo only: secure login is not connected. Configure Firebase Authentication or Supabase Auth before using real accounts.')}
-function providerInfo(provider){alert(provider+' login requires a configured authentication provider, client ID and authorised redirect URL.')}
-function paymentInfo(){alert('Pro payment is not connected. Configure a payment gateway and verify every payment on your server before activating Pro.')}
-$('apiKey').value=API_KEY;
-renderHistory();renderMessages();
+function loadChat(id){
+  currentId = id;
+  const chat = currentChat();
+  $("messages").innerHTML = "";
+  if(!chat || !chat.messages.length) showWelcome();
+  else chat.messages.forEach(m => addBubble(m.role,m.text,false));
+  $("sidebar").classList.remove("open");
+}
+function addBubble(role,text,save=true){
+  $("welcome")?.remove();
+  const wrap = document.createElement("div");
+  wrap.className = "message " + (role === "user" ? "user" : "assistant");
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = role === "user" ? "🙂" : "✦";
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+  wrap.append(avatar,bubble);
+  $("messages").appendChild(wrap);
+  $("messages").scrollTop = $("messages").scrollHeight;
+  if(save && currentChat()){
+    currentChat().messages.push({role,text});
+    if(role === "user" && currentChat().messages.length === 1){
+      currentChat().title = text.slice(0,35) || "New chat";
+    }
+    saveChats();
+  }
+  return wrap;
+}
+function bindSuggestions(){
+  document.querySelectorAll(".suggestion").forEach(b=>{
+    b.onclick=()=>{$("prompt").value=b.textContent;$("prompt").focus()};
+  });
+}
+bindSuggestions();
+
+$("newChat").onclick = newChat;
+$("menuBtn").onclick = ()=>$("sidebar").classList.toggle("open");
+$("apiSettings").onclick = ()=>{
+  $("apiKey").value = apiKey;
+  $("settingsModal").classList.add("show");
+};
+$("closeSettings").onclick = ()=>$("settingsModal").classList.remove("show");
+$("saveKey").onclick = ()=>{
+  apiKey = $("apiKey").value.trim();
+  if(apiKey) localStorage.setItem("neonew_gemini_key",apiKey);
+  else localStorage.removeItem("neonew_gemini_key");
+  $("settingsModal").classList.remove("show");
+  alert(apiKey ? "API key saved in this browser." : "API key removed.");
+};
+$("accountBtn").onclick = ()=>$("accountModal").classList.add("show");
+$("closeAccount").onclick = ()=>$("accountModal").classList.remove("show");
+$("googleBtn").onclick = ()=>$("authMessage").textContent = "Google login is not connected yet. Configure an authentication provider and backend first.";
+$("facebookBtn").onclick = ()=>$("authMessage").textContent = "Facebook login is not connected yet. Configure an authentication provider and backend first.";
+$("emailLogin").onclick = ()=>$("authMessage").textContent = "Email login is not active until a secure authentication backend is configured.";
+$("proBtn").onclick = ()=>$("proModal").classList.add("show");
+$("closePro").onclick = ()=>$("proModal").classList.remove("show");
+
+$("fileInput").onchange = async e=>{
+  const file = e.target.files[0];
+  attachment = null;
+  if(!file){$("attachmentPreview").textContent="";return;}
+  $("attachmentPreview").textContent = "Attached: " + file.name;
+  if(file.type.startsWith("image/")){
+    const reader = new FileReader();
+    reader.onload = ()=>{attachment={type:"image",name:file.name,data:reader.result};};
+    reader.readAsDataURL(file);
+  }else if(file.type === "application/pdf"){
+    attachment={type:"unsupported",name:file.name};
+    $("attachmentPreview").textContent += " (PDF text extraction is not built in yet)";
+  }else{
+    try{
+      const text = await file.text();
+      attachment={type:"text",name:file.name,data:text.slice(0,20000)};
+    }catch{
+      attachment={type:"unsupported",name:file.name};
+    }
+  }
+};
+$("exportBtn").onclick = ()=>{
+  const chat = currentChat();
+  if(!chat){alert("No chat to export.");return;}
+  const text = chat.messages.map(m=>(m.role==="user"?"You":"NeoNew AI")+":\n"+m.text).join("\n\n");
+  const blob = new Blob([text],{type:"text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url;a.download=(chat.title||"neonew-chat")+".txt";a.click();
+  URL.revokeObjectURL(url);
+};
+$("voiceBtn").onclick = ()=>{
+  const messages = currentChat()?.messages || [];
+  const last = [...messages].reverse().find(m=>m.role==="assistant");
+  if(!last){alert("No AI response to read.");return;}
+  if(!("speechSynthesis" in window)){alert("Text-to-speech is not supported in this browser.");return;}
+  speechSynthesis.cancel();
+  speechSynthesis.speak(new SpeechSynthesisUtterance(last.text));
+};
+
+async function sendMessage(){
+  if(busy)return;
+  const prompt = $("prompt").value.trim();
+  if(!prompt && !attachment)return;
+  if(!apiKey){
+    $("settingsModal").classList.add("show");
+    alert("First add your Gemini API key in settings.");
+    return;
+  }
+  if(!currentId || !currentChat()) newChat();
+  let userText = prompt;
+  if(attachment){
+    userText += "\n\nAttached file: "+attachment.name;
+    if(attachment.type==="text") userText += "\nFile content:\n"+attachment.data;
+    if(attachment.type==="unsupported") userText += "\nThis file could not be read by this demo.";
+  }
+  addBubble("user",userText);
+  $("prompt").value="";
+  $("attachmentPreview").textContent="";
+  const savedAttachment = attachment;
+  attachment = null;
+  $("fileInput").value="";
+  busy = true;
+  $("sendBtn").disabled = true;
+  $("sendBtn").textContent = "…";
+  const loading = addBubble("assistant","Thinking…",false);
+  try{
+    const input = [];
+    input.push({type:"text",text:userText || "Please describe this image."});
+    if(savedAttachment?.type==="image"){
+      const comma = savedAttachment.data.indexOf(",");
+      const mime = savedAttachment.data.slice(5,savedAttachment.data.indexOf(";"));
+      const base64 = savedAttachment.data.slice(comma+1);
+      input.push({type:"image",data:base64,mime_type:mime});
+    }
+    const body = {
+      model: MODEL,
+      input: input.length===1 ? userText : input
+    };
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-goog-api-key":apiKey
+      },
+      body:JSON.stringify(body)
+    });
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.error?.message || data.message || ("Request failed: "+response.status));
+    const answer = data.output_text ||
+      (Array.isArray(data.outputs) ? data.outputs.map(x=>x.text||"").join("\n") : "");
+    if(!answer) throw new Error("AI returned no text. Check model availability and API key permissions.");
+    loading.remove();
+    addBubble("assistant",answer);
+  }catch(err){
+    loading.remove();
+    addBubble("assistant","Error: "+err.message+"\n\nCheck your internet connection, API key, model availability and Google AI API access.");
+  }finally{
+    busy=false;
+    $("sendBtn").disabled=false;
+    $("sendBtn").textContent="Send ➤";
+    $("prompt").focus();
+  }
+}
+$("sendBtn").onclick = sendMessage;
+$("prompt").addEventListener("keydown",e=>{
+  if(e.key==="Enter" && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+if(chats.length) loadChat(chats[0].id);
+else newChat();
+renderHistory();
 </script>
 </body>
 </html>
