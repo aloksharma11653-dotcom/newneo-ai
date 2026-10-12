@@ -1,354 +1,174 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080b14">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NeoNew AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root{color-scheme:dark;--bg:#080b14;--panel:#101626;--line:#273149;--text:#f4f7ff;--muted:#99a6c0;--accent:#7c5cff;--cyan:#35d9ff}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#171638 0%,var(--bg) 48%);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.app{display:flex;min-height:100vh}
-.sidebar{width:260px;background:#0b0f1beF;border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:16px}
-.logo{font-size:23px;font-weight:900;letter-spacing:-1px;background:linear-gradient(90deg,#fff,var(--cyan),#a58bff);background-clip:text;color:transparent}
-.new,.sidebtn{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);text-align:left}
-.new{background:linear-gradient(110deg,#6446ed,#287edc);border:0;font-weight:750;text-align:center}
-.smalltitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:8px}
-.history{display:flex;flex-direction:column;gap:7px;overflow:auto}
-.history button{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sidebarbottom{margin-top:auto;color:var(--muted);font-size:12px;line-height:1.7}
-.main{flex:1;min-width:0;display:flex;flex-direction:column;min-height:100vh}
-.topbar{height:65px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:10px}
-.topname{font-weight:800}
-.status{font-size:12px;color:#80f0bd}
-.status:before{content:"";display:inline-block;width:7px;height:7px;background:#35e49a;border-radius:50%;margin-right:7px}
-.content{width:100%;max-width:900px;margin:0 auto;padding:26px 20px 150px;flex:1}
-.welcome{text-align:center;margin:55px auto 30px;max-width:650px}
-.orb{width:76px;height:76px;border-radius:25px;margin:0 auto 22px;display:grid;place-items:center;font-size:36px;background:linear-gradient(135deg,#6f48ff,#22d4ff);box-shadow:0 0 65px #6249ff55}
-h1{font-size:clamp(29px,6vw,45px);margin:0 0 12px;letter-spacing:-1.5px}
-.grad{background:linear-gradient(90deg,#a891ff,#50e2ff);background-clip:text;color:transparent}
-.subtitle{color:var(--muted);line-height:1.7}
-.suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:25px;text-align:left}
-.suggestion{border:1px solid var(--line);background:#111728;border-radius:15px;padding:15px;color:var(--text);line-height:1.5}
-.suggestion b{display:block;margin-bottom:5px}
-.suggestion span{font-size:13px;color:var(--muted)}
-.messages{display:flex;flex-direction:column;gap:22px}
-.message{display:flex;gap:12px;align-items:flex-start;line-height:1.75;min-width:0}
-.avatar{width:34px;height:34px;flex-shrink:0;border-radius:12px;background:#222b42;display:grid;place-items:center;font-size:15px}
-.message.ai .avatar{background:linear-gradient(135deg,#6847ed,#18a6ce)}
-.msgbody{min-width:0;flex:1;overflow-wrap:anywhere}
-.msglabel{font-size:12px;color:var(--muted);margin-bottom:5px}
-.msgtext{white-space:pre-wrap}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.action{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 9px;color:var(--muted);font-size:12px}
-.composerwrap{position:fixed;bottom:0;left:260px;right:0;padding:18px 20px 12px;background:linear-gradient(transparent,#080b14 20%);z-index:5}
-.composer{max-width:860px;margin:auto;background:#111728;border:1px solid #394461;border-radius:20px;padding:12px;box-shadow:0 10px 50px #0007}
-#prompt{width:100%;min-height:54px;max-height:180px;resize:vertical;background:transparent;border:0;outline:none;color:var(--text);padding:8px;font-size:15px}
-.composerfoot{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.hint{font-size:11px;color:var(--muted)}
-.send{border:0;border-radius:12px;background:linear-gradient(120deg,#7654ff,#258eea);color:white;padding:11px 18px;font-weight:800}
-.send:disabled{opacity:.5;cursor:not-allowed}
-.error{background:#451e2a;border:1px solid #8c3b53;padding:12px;border-radius:12px;margin:15px 0;color:#ffc9d6;white-space:pre-wrap;overflow-wrap:anywhere}
-.typing{color:var(--cyan);font-size:13px;padding:10px 0}
-.mobilemenu{display:none}
-@media(max-width:700px){
- .sidebar{display:none;position:fixed;inset:0 auto 0 0;width:min(290px,85vw);z-index:10;box-shadow:20px 0 80px #0009}
- .sidebar.open{display:flex}
- .mobilemenu{display:inline-block}
- .topbar{padding:0 13px}
- .content{padding:18px 13px 150px}
- .welcome{margin:35px auto 25px}
- .suggestions{grid-template-columns:1fr}
- .composerwrap{left:0;padding:12px 10px 10px}
- .hint{display:none}
-}
+:root{--bg:#0a0a0f;--surface:#111118;--card:#16161f;--border:#2a2a3a;--accent:#00e5ff;--accent2:#a259ff;--gold:#ffd700;--danger:#ff4d6d;--text:#e8e8f0;--muted:#6b6b88;--ai:#0d1f2d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column}
+.header{padding:16px 20px;display:flex;align-items:center;border-bottom:1px solid var(--border);background:rgba(10,10,15,0.95);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:11px;color:var(--muted);letter-spacing:2px}
+.bar{display:flex;gap:8px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center}
+.chip{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.ubtn{margin-left:auto;background:linear-gradient(135deg,var(--accent2),#7b2fff);border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit}
+.chat{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.welcome{text-align:center;padding:40px 20px}
+.wi{font-size:56px;margin-bottom:16px}
+.welcome h2{font-size:26px;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.welcome p{color:var(--muted);font-size:14px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text);cursor:pointer}
+.sc:hover{border-color:var(--accent);color:var(--accent)}
+.msg{display:flex;flex-direction:column;gap:4px;animation:fu 0.3s ease}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.msg.u{align-items:flex-end}
+.msg.a{align-items:flex-start}
+.bubble{max-width:82%;padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.6}
+.msg.u .bubble{background:linear-gradient(135deg,rgba(0,229,255,0.15),rgba(162,89,255,0.15));border:1px solid rgba(0,229,255,0.25);border-bottom-right-radius:4px}
+.msg.a .bubble{background:var(--ai);border:1px solid var(--border);border-bottom-left-radius:4px}
+.alabel{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px}
+.typing{display:flex;align-items:center;gap:4px;padding:12px 16px;background:var(--ai);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px}
+.td{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:tb 1.2s infinite}
+.td:nth-child(2){animation-delay:0.2s}.td:nth-child(3){animation-delay:0.4s}
+@keyframes tb{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.inp-area{padding:12px 14px;background:rgba(10,10,15,0.97);border-top:1px solid var(--border);position:sticky;bottom:0}
+.inp-row{display:flex;gap:10px;align-items:flex-end}
+textarea{flex:1;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;resize:none;outline:none;max-height:120px;line-height:1.5}
+textarea:focus{border-color:var(--accent)}
+textarea::placeholder{color:var(--muted)}
+.sbtn{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;cursor:pointer;font-size:18px;flex-shrink:0}
+.sbtn:disabled{opacity:0.4;cursor:not-allowed}
+#ks{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
+.kb{max-width:360px;width:100%;text-align:center}
+.kb h2{font-size:24px;font-weight:700;margin-bottom:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kb p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
+.ki{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-size:13px;font-family:monospace;outline:none;margin-bottom:14px}
+.kbtn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:700;color:#000;cursor:pointer;font-family:inherit}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;padding:20px}
+.mo.show{display:flex}
+.md{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center;position:relative}
+.md h3{font-size:22px;font-weight:700;background:linear-gradient(90deg,var(--gold),#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.md p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
+.pb{background:var(--surface);border:1px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:20px}
+.pp{font-size:36px;font-weight:700;color:var(--gold)}
+.pf{list-style:none;margin-top:10px;text-align:left}
+.pf li{font-size:13px;padding:4px 0;display:flex;align-items:center;gap:8px}
+.pf li::before{content:'✓';color:var(--accent);font-weight:700}
+.paybtn{width:100%;background:linear-gradient(135deg,var(--gold),#ff8c00);color:#000;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px}
+.vbtn{width:100%;background:none;border:1px solid var(--accent);border-radius:10px;padding:8px 16px;color:var(--accent);font-size:13px;cursor:pointer;font-family:inherit}
+.mc{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="app">
-<aside class="sidebar" id="sidebar">
-  <div class="logo">✦ NeoNew AI</div>
-  <button class="new" id="newChat">＋ New Chat</button>
-  <div class="smalltitle">Recent chats</div>
-  <div class="history" id="history"></div>
-  <div class="sidebarbottom">
-    <b>NeoNew AI</b><br>
-    Your AI assistant, always ready.<br>
-    <span>Powered by Gemini</span>
-  </div>
-</aside>
-
-<main class="main">
-  <header class="topbar">
-    <div style="display:flex;align-items:center;gap:12px">
-      <button class="sidebtn mobilemenu" id="menuBtn" style="width:auto;padding:8px 12px">☰</button>
-      <div class="topname">NeoNew <span class="grad">AI</span></div>
-    </div>
-    <div class="status" id="status">Ready</div>
-  </header>
-
-  <section class="content">
-    <div class="welcome" id="welcome">
-      <div class="orb">✦</div>
-      <h1>Meet your <span class="grad">AI assistant</span></h1>
-      <div class="subtitle">Ask questions, learn new things, write content, brainstorm ideas, or solve a problem. Let's get started.</div>
-      <div class="suggestions">
-        <button class="suggestion" data-prompt="Explain a difficult topic in simple Hindi."><b>📚 Learn something</b><span>Understand any topic easily</span></button>
-        <button class="suggestion" data-prompt="Give me 5 creative YouTube video ideas for a gaming channel."><b>🎮 Create content</b><span>Ideas, scripts and titles</span></button>
-        <button class="suggestion" data-prompt="Help me create a realistic study timetable for school."><b>🎯 Make a plan</b><span>Turn goals into clear steps</span></button>
-        <button class="suggestion" data-prompt="Teach me a useful new fact with an example."><b>💡 Discover something</b><span>Facts, examples and explanations</span></button>
-      </div>
-    </div>
-    <div class="messages" id="messages"></div>
-    <div id="errorBox" class="error" hidden></div>
-  </section>
-</main>
+<div class="header">
+<div class="logo">
+<div class="logo-icon">🧠</div>
+<div><div class="logo-text">NeoNew</div><div class="logo-sub">AI ASSISTANT</div></div>
 </div>
-
-<div class="composerwrap">
-  <form class="composer" id="chatForm">
-    <textarea id="prompt" placeholder="Message NeoNew AI..." maxlength="30000" required></textarea>
-    <div class="composerfoot">
-      <div class="hint">Enter to send · Shift + Enter for a new line</div>
-      <button class="send" id="sendBtn" type="submit">Send ↑</button>
-    </div>
-  </form>
-  <div style="text-align:center;color:#77839d;font-size:10px;margin-top:8px">AI can make mistakes. Verify important information.</div>
 </div>
-
+<div class="bar">
+<div class="chip" id="pc"><span class="dot"></span><span id="pd">Points: 140</span></div>
+<div id="pb2" style="display:none;background:linear-gradient(135deg,#ffd700,#ff8c00);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:#000">⭐ PREMIUM</div>
+<button class="ubtn" id="ub" onclick="showM()">⚡ Upgrade</button>
+</div>
+<div class="chat" id="chat">
+<div class="welcome" id="ws">
+<div class="wi">🤖</div>
+<h2>NeoNew AI</h2>
+<p>Namaste bhai! Main hoon NeoNew AI<br>Kuch bhi poocho — Hindi mein! 😄</p>
+<div class="chips">
+<div class="sc" onclick="sc('IPL 2025 ke baare mein batao')">🏏 IPL 2025</div>
+<div class="sc" onclick="sc('AI kya hota hai samjhao')">🤖 AI kya hai?</div>
+<div class="sc" onclick="sc('Paise kaise bachayein tips do')">💰 Paise bachao</div>
+<div class="sc" onclick="sc('Ek funny joke sunao')">😂 Joke sunao</div>
+</div>
+</div>
+</div>
+<div class="inp-area">
+<div class="inp-row">
+<textarea id="mi" placeholder="Kuch bhi poocho bhai..." rows="1" onkeydown="hk(event)" oninput="ar(this)"></textarea>
+<button class="sbtn" id="sb" onclick="send()">➤</button>
+</div>
+</div>
+</div>
+<div id="ks">
+<div class="kb">
+<div style="font-size:52px;margin-bottom:16px">🔑</div>
+<h2>Gemini API Key Daalo</h2>
+<p>Google AI Studio se free key lo:<br>aistudio.google.com<br><br>Key sirf tumhare device mein save hogi 🔒</p>
+<input class="ki" id="ki" type="password" placeholder="AIzaSy..."/>
+<button class="kbtn" onclick="sk()">✅ Save Karo & Start Karo</button>
+</div>
+</div>
+<div class="mo" id="mo">
+<div class="md">
+<button class="mc" onclick="hideM()">✕</button>
+<div style="font-size:40px;margin-bottom:10px">⭐</div>
+<h3>NeoNew Premium</h3>
+<p>Free points khatam — Premium lo!</p>
+<div class="pb">
+<div class="pp">₹99 <span style="font-size:16px;color:var(--muted)">/month</span></div>
+<ul class="pf">
+<li>Unlimited messages ♾️</li>
+<li>Faster responses ⚡</li>
+<li>Smart AI 🧠</li>
+<li>No limits 🚫</li>
+</ul>
+</div>
+<button class="paybtn" onclick="pay()">💳 UPI se Pay — ₹99</button>
+<button class="vbtn" onclick="verify()">✅ Maine Pay Kar Diya</button>
+</div>
+</div>
 <script>
-(() => {
-  const $ = id => document.getElementById(id);
-  const form = $("chatForm");
-  const prompt = $("prompt");
-  const messagesEl = $("messages");
-  const welcome = $("welcome");
-  const historyEl = $("history");
-  const statusEl = $("status");
-  const sendBtn = $("sendBtn");
-  const errorBox = $("errorBox");
-  const sidebar = $("sidebar");
-
-  let chats = [];
-  let currentId = null;
-  let busy = false;
-
-  try {
-    const saved = JSON.parse(localStorage.getItem("neonew_chats") || "[]");
-    if (Array.isArray(saved)) chats = saved;
-  } catch (_) {}
-
-  function save() {
-    try {
-      localStorage.setItem("neonew_chats", JSON.stringify(chats.slice(-30)));
-    } catch (_) {}
-  }
-
-  function currentChat() {
-    return chats.find(c => c.id === currentId);
-  }
-
-  function newChat() {
-    if (busy) return;
-    currentId = Date.now().toString();
-    chats.push({id: currentId, title: "New chat", messages: []});
-    welcome.hidden = false;
-    messagesEl.replaceChildren();
-    errorBox.hidden = true;
-    prompt.value = "";
-    renderHistory();
-    save();
-    sidebar.classList.remove("open");
-  }
-
-  function renderHistory() {
-    historyEl.replaceChildren();
-    [...chats].reverse().forEach(chat => {
-      const btn = document.createElement("button");
-      btn.className = "sidebtn";
-      btn.textContent = chat.title || "New chat";
-      btn.title = chat.title || "New chat";
-      btn.style.borderColor = chat.id === currentId ? "#7654ff" : "";
-      btn.addEventListener("click", () => loadChat(chat.id));
-      historyEl.appendChild(btn);
-    });
-  }
-
-  function loadChat(id) {
-    if (busy) return;
-    currentId = id;
-    const chat = currentChat();
-    welcome.hidden = !!(chat && chat.messages.length);
-    messagesEl.replaceChildren();
-    errorBox.hidden = true;
-    if (chat) chat.messages.forEach(m => addMessage(m.role, m.text, false));
-    renderHistory();
-    sidebar.classList.remove("open");
-  }
-
-  function addMessage(role, text, persist = true) {
-    const row = document.createElement("div");
-    row.className = "message " + (role === "assistant" ? "ai" : "user");
-
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = role === "assistant" ? "✦" : "●";
-
-    const body = document.createElement("div");
-    body.className = "msgbody";
-
-    const label = document.createElement("div");
-    label.className = "msglabel";
-    label.textContent = role === "assistant" ? "NeoNew AI" : "You";
-
-    const content = document.createElement("div");
-    content.className = "msgtext";
-    content.textContent = text;
-
-    body.append(label, content);
-
-    if (role === "assistant") {
-      const actions = document.createElement("div");
-      actions.className = "actions";
-
-      const copy = document.createElement("button");
-      copy.className = "action";
-      copy.textContent = "Copy";
-      copy.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-          copy.textContent = "Copied!";
-          setTimeout(() => copy.textContent = "Copy", 1200);
-        } catch (_) {
-          copy.textContent = "Copy unavailable";
-        }
-      });
-
-      const speak = document.createElement("button");
-      speak.className = "action";
-      speak.textContent = "🔊 Read aloud";
-      speak.addEventListener("click", () => {
-        if (!("speechSynthesis" in window)) {
-          showError("Voice reading is not supported by this browser.");
-          return;
-        }
-        speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "hi-IN";
-        speechSynthesis.speak(utterance);
-      });
-
-      actions.append(copy, speak);
-      body.appendChild(actions);
-    }
-
-    row.append(avatar, body);
-    messagesEl.appendChild(row);
-    if (persist) messagesEl.scrollIntoView({behavior:"smooth", block:"end"});
-  }
-
-  function showError(message) {
-    errorBox.hidden = false;
-    errorBox.textContent = message;
-  }
-
-  function setBusy(value) {
-    busy = value;
-    sendBtn.disabled = value;
-    prompt.disabled = value;
-    sendBtn.textContent = value ? "Thinking…" : "Send ↑";
-    statusEl.textContent = value ? "Thinking…" : "Ready";
-  }
-
-  async function sendMessage(message) {
-    if (busy || !message.trim()) return;
-
-    if (!currentChat()) newChat();
-    const chat = currentChat();
-    chat.messages.push({role:"user", text:message});
-    if (chat.title === "New chat") {
-      chat.title = message.slice(0, 35) || "New chat";
-    }
-
-    welcome.hidden = true;
-    errorBox.hidden = true;
-    addMessage("user", message);
-    renderHistory();
-    save();
-    prompt.value = "";
-    setBusy(true);
-
-    const loading = document.createElement("div");
-    loading.className = "typing";
-    loading.textContent = "NeoNew AI is thinking…";
-    messagesEl.appendChild(loading);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({message})
-      });
-
-      let data = {};
-      try {
-        data = await response.json();
-      } catch (_) {
-        throw new Error("Server returned an invalid response. Check api/chat.js.");
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || `Request failed (${response.status}).`);
-      }
-
-      if (typeof data.reply !== "string" || !data.reply.trim()) {
-        throw new Error("AI response was empty. Check the backend response format.");
-      }
-
-      chat.messages.push({role:"assistant", text:data.reply});
-      addMessage("assistant", data.reply);
-      save();
-    } catch (err) {
-      showError("Could not connect to NeoNew AI.\n\n" + (err.message || "Please try again."));
-    } finally {
-      loading.remove();
-      setBusy(false);
-      prompt.focus();
-    }
-  }
-
-  form.addEventListener("submit", event => {
-    event.preventDefault();
-    sendMessage(prompt.value);
-  });
-
-  prompt.addEventListener("keydown", event => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      form.requestSubmit();
-    }
-  });
-
-  $("newChat").addEventListener("click", newChat);
-  $("menuBtn").addEventListener("click", () => sidebar.classList.toggle("open"));
-
-  document.querySelectorAll("[data-prompt]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      prompt.value = btn.dataset.prompt;
-      prompt.focus();
-    });
-  });
-
-  if (chats.length) {
-    loadChat(chats[chats.length - 1].id);
-  } else {
-    newChat();
-  }
-})();
+let KEY=localStorage.getItem('ngk')||'';
+let pts=parseInt(localStorage.getItem('np')||'140');
+let prem=localStorage.getItem('npm')==='true';
+let busy=false;
+const UPI='upi://pay?pa=9368660880@ptsbi&pn=NeoNew&am=99&cu=INR';
+const SYS='Tu NeoNew AI hai — ek desi smart assistant! Rules: 1) Hamesha Hindi mein baat kar 2) Short aur clear jawab de 3) Funny aur friendly reh 4) Expert ki tarah baat kar 5) Emojis use kar! Agar koi owner ya creator ke baare mein pooche toh bol: Is app ke owner hain Tanmay Sharma, address: Birauli';
+if(KEY)document.getElementById('ks').style.display='none';
+function sk(){const k=document.getElementById('ki').value.trim();if(!k){alert('Key daalo!');return;}localStorage.setItem('ngk',k);KEY=k;document.getElementById('ks').style.display='none';}
+function us(){const e=document.getElementById('pd');if(prem){e.textContent='Unlimited ♾️';document.getElementById('pb2').style.display='flex';document.getElementById('ub').style.display='none';document.getElementById('pc').style.borderColor='#ffd700';}else{e.textContent='Points: '+pts;document.getElementById('pc').style.borderColor=pts<=30?'var(--danger)':'var(--border)';}localStorage.setItem('np',pts);}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function am(role,text){const w=document.getElementById('ws');if(w)w.remove();const c=document.getElementById('chat');const d=document.createElement('div');d.className='msg '+role;d.innerHTML=role==='a'?`<div class="alabel">🤖 NeoNew</div><div class="bubble">${text}</div>`:`<div class="bubble">${text}</div>`;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function st(){const c=document.getElementById('chat');const d=document.createElement('div');d.className='msg a';d.id='ti';d.innerHTML='<div class="alabel">🤖 NeoNew</div><div class="typing"><div class="td"></div><div class="td"></div><div class="td"></div></div>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function rt(){const t=document.getElementById('ti');if(t)t.remove();}
+async function send(){
+if(busy)return;
+const inp=document.getElementById('mi');
+const text=inp.value.trim();
+if(!text)return;
+if(!KEY){document.getElementById('ks').style.display='flex';return;}
+if(!prem&&pts<=0){showM();return;}
+inp.value='';inp.style.height='auto';
+am('u',text);busy=true;
+document.getElementById('sb').disabled=true;st();
+try{
+const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${KEY}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:text}]}],systemInstruction:{parts:[{text:SYS}]}})});
+const d=await r.json();rt();
+if(d.error){am('a','⚠️ Error: '+d.error.message);}
+else{am('a',d.candidates[0].content.parts[0].text.replace(/\n/g,'<br>'));if(!prem){pts=Math.max(0,pts-10);us();if(pts===0)setTimeout(showM,500);}}
+}catch(e){rt();am('a','⚠️ Error: '+e.message);}
+busy=false;document.getElementById('sb').disabled=false;
+}
+function sc(t){document.getElementById('mi').value=t;send();}
+function showM(){document.getElementById('mo').classList.add('show');}
+function hideM(){document.getElementById('mo').classList.remove('show');}
+function pay(){window.location.href=UPI;}
+function verify(){const c=prompt('Verification code:');if(c==='NEONEW99'){prem=true;localStorage.setItem('npm','true');us();hideM();am('a','🎉 Premium Activate! Ab unlimited chat karo! ⭐');}else alert('Galat code!');}
+document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)hideM();});
+us();
 </script>
 </body>
 </html>
