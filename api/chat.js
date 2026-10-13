@@ -1,81 +1,30 @@
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({
-      error: "Only POST requests are allowed."
-    });
-  }
-
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({
-      error: "GEMINI_API_KEY missing. Add it in Vercel Environment Variables."
-    });
-  }
-
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Only POST allowed' });
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: 'Message required' });
   try {
-    const message = req.body?.message;
-
-    if (typeof message !== "string" || !message.trim()) {
-      return res.status(400).json({
-        error: "Please enter a message."
-      });
-    }
-
-    if (message.length > 30000) {
-      return res.status(413).json({
-        error: "Message is too long. Please shorten it."
-      });
-    }
-
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/interactions",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${process.env.CLAUDE_API_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          model: "gemini-3.8-flash",
-          input: message
+          contents: [{ parts: [{ text: message }] }],
+          systemInstruction: {
+            parts: [{ text: "Tu NeoNew AI hai — ek desi smart assistant jo sab kuch jaanta hai! Rules: 1) Hamesha Hindi mein baat kar 2) Short aur clear jawab de 3) Funny aur friendly reh — kabhi kabhi jokes maar 4) Expert ki tarah baat kar — confident reh 5) Kabhi mat bol mujhe nahi pata — kuch na kuch bol 6) Bhai jaisi baat kar — formal mat ho 7) Emojis use kar!" }]
+          }
         })
       }
     );
-
     const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Gemini API error:", data.error?.message);
-
-      return res.status(response.status).json({
-        error: data.error?.message || "Gemini API request failed."
-      });
-    }
-
-    const answer =
-      data.output_text ||
-      (Array.isArray(data.outputs)
-        ? data.outputs.map(item => item.text || "").join("\n")
-        : "");
-
-    if (!answer.trim()) {
-      return res.status(502).json({
-        error: "Gemini returned an empty response."
-      });
-    }
-
-    return res.status(200).json({
-      reply: answer
-    });
-
-  } catch (error) {
-    console.error("Chat backend error:", error);
-
-    return res.status(500).json({
-      error: "AI server error. Please try again."
-    });
+    if (data.error) return res.status(500).json({ error: data.error.message });
+    const reply = data.candidates[0].content.parts[0].text;
+    return res.status(200).json({ reply });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 }
